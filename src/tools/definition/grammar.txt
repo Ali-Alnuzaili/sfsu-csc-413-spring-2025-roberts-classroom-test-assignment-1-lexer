@@ -1,0 +1,55 @@
+# SEPARATOR_NAMES
+,  Comma
+{  LeftBrace
+}  RightBrace
+(  LeftParen
+)  RightParen
+
+# OPERATOR_NAMES
++  Plus
+-  Minus
+*  Multiply
+/  Divide
+&  And
+|  Or
+=  Assign
+== Equal
+!= NotEqual
+<  Less
+<= LessEqual
+
+# IMPLICIT_ASTS
+# Some productions do not require an AST node (and we can't infer from the production if that's the case)
+DECL            # This will resolve to _either_ a variable declaration, or a function declaration
+STATEMENT       # This will resolve to one of the allowable statement types
+FACTOR          # This will be either a parenthesized expression (which will be handled during parsing), or one of the allowable factors
+TYPE            # This will end up being a special type tree defined by the actual type being used (i.e. int or bool)
+
+# ASTS_WITH_SYMBOLS
+# Finally, some ASTs need to hang on to their lexeme for use in a later stage of compilation
+# Literals require a symbol as well, but this can be inferred from the grammar
+REL_OP          # We will need the specific relational operator that was used
+ADD_OP          # We will need the specific addition operator that was used
+MULT_OP         # We will need the specific multiplication operator that was used
+IDENTIFIER      # We will need the name of the identifier
+
+# GRAMMAR_PRODUCTIONS
+PROGRAM         ::= 'program' BLOCK
+BLOCK           ::= '{' DECL* STATEMENT* '}'
+DECL            ::= VAR_DECL | FUNCTION_DECL
+VAR_DECL        ::= TYPE IDENTIFIER
+FUNCTION_DECL   ::= TYPE IDENTIFIER '(' FORMALS ')' BLOCK
+FORMALS         ::= ε | VAR_DECL (',' VAR_DECL)*
+TYPE            ::= 'int' | 'bool'
+STATEMENT       ::= IF | WHILE | RETURN | BLOCK | ASSIGNMENT
+IF              ::= 'if' REL_OP 'then' BLOCK 'else' BLOCK
+WHILE           ::= 'while' REL_OP BLOCK
+RETURN          ::= 'return' REL_OP
+ASSIGNMENT      ::= <id> '=' REL_OP
+REL_OP          ::= ADD_OP | ADD_OP '==' ADD_OP | ADD_OP '!=' ADD_OP | ADD_OP '<' ADD_OP | ADD_OP '<=' ADD_OP
+ADD_OP          ::= MULT_OP | ADD_OP '+' MULT_OP | ADD_OP '-' MULT_OP | ADD_OP '|' MULT_OP
+MULT_OP         ::= FACTOR | MULT_OP '*' FACTOR | MULT_OP '/' FACTOR | MULT_OP '&' FACTOR
+FACTOR          ::= '(' REL_OP ')' | IDENTIFIER | CALL | <int>
+CALL            ::= IDENTIFIER '(' PARAMS ')'
+PARAMS          ::= ε | REL_OP (',' REL_OP)*
+IDENTIFIER      ::= <id>
