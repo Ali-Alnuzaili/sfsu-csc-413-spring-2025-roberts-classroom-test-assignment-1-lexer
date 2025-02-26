@@ -19,9 +19,26 @@ public class Token {
         return lineNumber;
     }
 
+    public String getLexeme() {
+        return lexeme;
+    }
+
+    public int getLeft() {
+        return left;
+    }
+
+    public int getRight() {
+        return right;
+    }
+
+    public TokenKind getTokenKind() {
+        return tokenKind;
+    }
+
     @Override
     public String toString() {
-        return String.format("%-20s left: %-8d right: %-8d line: %-8d %s", lexeme, left, right, lineNumber, tokenKind);
+        return String.format("%-20s left: %-8d right: %-8d line: %-8d %s", 
+                              lexeme, left, right, lineNumber, tokenKind);
     }
 }
 

@@ -10,18 +10,20 @@ public enum TokenKind {
   BogusToken, EOF,
 
   // Keywords
-  BoolType, Else, If, IntType, CharType, HexType, /
-  Program, Return, Then, While, From, Step, 
+  BoolType, Else, If, IntType, CharType, HexType, // Added CharType, HexType
+  Program, Return, Then, While, From, Step, // Added From, Step
 
   // Operators
   NotEqual, And, Multiply, Plus, Minus,
-  Divide, Less, LessEqual, Greater, GreaterEqual, 
+  Divide, Less, LessEqual, Greater, GreaterEqual, // Added Greater, GreaterEqual
   Assign, Equal, Or,
 
   // Separators
-  LeftParen, RightParen, Comma, LeftBrace, RightBrace, To, 
+  LeftParen, RightParen, Comma, LeftBrace, RightBrace, To, // Added To (=>)
 
-  // Identifiers & Literals
-  Identifier, 
-  IntLit 
+  // Literals and Identifiers
+  Identifier,  // Variable names like i, j, write
+  IntLit,      // Integer literals like 7, 42
+  CharLit,     // Added for char literals ("a")
+  HexLit       // Added for hexadecimal literals (0x1a2F)
 }
