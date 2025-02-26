@@ -17,39 +17,50 @@ public class Lexer {
 
         String filePath = args[0];
         List<Token> tokens = new ArrayList<>();
+        List<String> sourceLines = new ArrayList<>();
+        int lineNumber = 1;  
 
         try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
             String line;
-            int lineNumber = 1;
 
+            // Read and store all lines
             while ((line = reader.readLine()) != null) {
-                System.out.printf("%3d: %s%n", lineNumber, line);
-
-                // Improved Tokenization: Splits by spaces, parentheses, and special characters
-                String[] words = line.split("(?<=[()=<>+\\-*/{}])|(?=[()=<>+\\-*/{}])|\\s+");
-
-                int position = 0;
-                for (String word : words) {
-                    word = word.trim(); // Trim spaces to avoid leading spaces in tokens
-                    if (!word.isEmpty()) {
-                        TokenKind kind = classifyToken(word);
-                        tokens.add(new Token(word, position, position + word.length() - 1, lineNumber, kind));
-                        position += word.length() + 1; // Move to next token
-                    }
-                }
-
+                sourceLines.add(line);
                 lineNumber++;
             }
-
-            // Print formatted tokens
-            System.out.println("\nTokens:");
-            for (Token token : tokens) {
-                System.out.println(token);
-            }
-
         } catch (IOException e) {
             System.err.println("Error reading file: " + filePath);
             e.printStackTrace();
+            return;
+        }
+
+        // Print source file lines with line numbers
+        System.out.println("\nSource Code:");
+        for (int i = 0; i < sourceLines.size(); i++) {
+            System.out.printf("%3d: %s%n", i + 1, sourceLines.get(i));
+        }
+
+        // Tokenizing the source code
+        System.out.println("\nTokens:");
+        lineNumber = 1;  
+        for (String line : sourceLines) {
+            String[] words = line.split("(?<=[()=<>+\\-*/{}])|(?=[()=<>+\\-*/{}])|\\s+");
+
+            int position = 0;
+            for (String word : words) {
+                word = word.trim(); 
+                if (!word.isEmpty()) {
+                    TokenKind kind = classifyToken(word);
+                    tokens.add(new Token(word, position, position + word.length() - 1, lineNumber, kind));
+                    position += word.length() + 1;
+                }
+            }
+            lineNumber++;
+        }
+
+        // Print formatted tokens
+        for (Token token : tokens) {
+            System.out.println(token);
         }
     }
 
@@ -80,7 +91,7 @@ public class Lexer {
             case "-": return TokenKind.Minus;
             case "*": return TokenKind.Multiply;
             case "/": return TokenKind.Divide;
-            case "=>": return TokenKind.To; // New separator
+            case "=>": return TokenKind.To;
 
             // Separators
             case "{": return TokenKind.LeftBrace;
@@ -92,18 +103,18 @@ public class Lexer {
             // Identifiers & Numbers
             default:
                 if (word.matches("^[a-zA-Z_][a-zA-Z0-9_]*$")) {
-                    return TokenKind.Identifier; // Recognizes variable names like i, j, write
+                    return TokenKind.Identifier;
                 }
                 if (word.matches("^[0-9]+$")) {
-                    return TokenKind.IntLit; // Recognizes numbers like 7, 42
+                    return TokenKind.IntLit;
                 }
                 if (word.matches("^0[xX][0-9a-fA-F]+$")) {
-                    return TokenKind.HexLit; // Recognizes hexadecimal numbers (0x1a2F, 0XABC)
+                    return TokenKind.HexLit;
                 }
                 if (word.matches("^\"[a-zA-Z0-9]\"$")) {
-                    return TokenKind.CharLit; // Recognizes char literals ("a", "9")
+                    return TokenKind.CharLit;
                 }
-                return TokenKind.BogusToken; // Default if nothing matches
+                return TokenKind.BogusToken;
         }
     }
 }
